@@ -1,61 +1,95 @@
-//
-//  ContentView.swift
-//  Profile
-//
-//  Created by liju prabhavathy sudhakaran on 2024-05-09.
-//
-
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        NavigationView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Image("profile_picture")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading) {
+                        Text("Liju")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Text("Mobile developer @ Accenture")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("Riga, Latvia")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
+                    .padding(.leading, 16)
                 }
-                .onDelete(perform: deleteItems)
+                
+                Text("About")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Text("Passionate Mobile developer with 8+ years of experience in building high-quality mobile applications. Skilled in Swift, SwiftUI, and Combine. Always eager to learn new technologies and improve coding skills.")
+                    .font(.body)
+                    .foregroundColor(.primary)
+                
+                Text("Experience")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    ExperienceView(
+                        company: "Accenture Baltics",
+                        position: "Application Developement senior analyst",
+                        duration: "Jan 2022- Present",
+                        description: "Developed and maintained several high-profile applications using Android,Swift and SwiftUI."
+                    )
+                    ExperienceView(
+                        company: "Innovation Incubator Advisory",
+                        position: "Senior Software Engineer",
+                        duration: "Jun 2019 - Dec 2021",
+                        description: "Assisted in the development of mobile applications and collaborated with cross-functional teams."
+                    )
+                }
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
+            .padding()
+            .navigationTitle("Profile")
         }
     }
+}
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+struct ExperienceView: View {
+    var company: String
+    var position: String
+    var duration: String
+    var description: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(company)
+                .font(.headline)
+            
+            Text(position)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text(duration)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text(description)
+                .font(.body)
+                .lineLimit(nil)
+                .foregroundColor(.primary)
+                .fixedSize(horizontal: false, vertical: true)
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+        .padding(.vertical, 8)
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
